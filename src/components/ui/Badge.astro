@@ -1,0 +1,52 @@
+---
+interface BadgeProps {
+  variant?: 'default' | 'primary' | 'secondary' | 'success' | 'warning' | 'error';
+  size?: 'sm' | 'md';
+  class?: string;
+  children: any;
+}
+
+const { variant = 'default', size = 'md', class: className = '', children, ...attrs } = Astro.props;
+
+const variantClasses: Record<string, string> = {
+  default: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-200',
+  primary: 'bg-primary-light text-primary dark:bg-primary/20 dark:text-primary-light',
+  secondary: 'bg-secondary-light text-secondary dark:bg-secondary/20 dark:text-secondary-light',
+  success: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  warning: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+  error: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+};
+
+const sizeClasses: Record<string, string> = {
+  sm: 'px-2 py-0.5 text-xs',
+  md: 'px-2.5 py-1 text-sm',
+};
+
+const baseClasses = 'inline-flex items-center font-medium rounded-full';
+const badgeClass = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
+---
+
+<span class={badgeClass} {...attrs}>
+  {children}
+</span>
+
+<style>
+  .inline-flex { display: inline-flex; }
+  .items-center { align-items: center; }
+  .font-medium { font-weight: var(--font-medium); }
+  .rounded-full { border-radius: var(--radius-full); }
+  .px-2 { padding-left: var(--space-2); padding-right: var(--space-2); }
+  .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+  .py-0\.5 { padding-top: 0.125rem; padding-bottom: 0.125rem; }
+  .py-1 { padding-top: var(--space-1); padding-bottom: var(--space-1); }
+  .text-xs { font-size: var(--text-xs); }
+  .text-sm { font-size: var(--text-sm); }
+  .bg-gray-100 { background-color: var(--color-gray-100); }
+  .text-gray-700 { color: var(--color-gray-700); }
+  .dark\:bg-gray-800 { background-color: var(--color-gray-800); }
+  .dark\:text-gray-200 { color: var(--color-gray-200); }
+  .bg-primary-light { background-color: var(--color-primary-light); }
+  .text-primary { color: var(--color-primary); }
+  .dark\:bg-primary\/20 { background-color: color-mix(in srgb, var(--color-primary) 20%, transparent); }
+  .dark\:text-primary-light { color: var(--color-primary-light); }
+</style>

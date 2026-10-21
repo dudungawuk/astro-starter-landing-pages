@@ -1,0 +1,141 @@
+---
+import Icon from '../ui/Icon.astro';
+import { aboutConfig } from '@/config/site';
+
+interface AboutProps {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+if (!aboutConfig.enabled) {
+  // Return nothing if disabled
+}
+---
+
+<section id="about" class="bg-white dark:bg-gray-950 {className}" aria-labelledby="about-heading">
+  <div class="container">
+    <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      <div>
+        <header class="mb-8">
+          <h2 id="about-heading" class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+            {aboutConfig.title}
+          </h2>
+          <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
+            {aboutConfig.description}
+          </p>
+        </header>
+
+        {aboutConfig.mission && (
+          <div class="mb-8 p-6 bg-primary-light dark:bg-primary/10 rounded-xl border-l-4 border-primary">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Our Mission</h3>
+            <p class="text-gray-600 dark:text-gray-300">{aboutConfig.mission}</p>
+          </div>
+        )}
+
+        {aboutConfig.values && aboutConfig.values.length > 0 && (
+          <div class="space-y-4">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Our Values</h3>
+            <ul class="space-y-4" role="list">
+              {aboutConfig.values.map((value) => (
+                <li class="flex gap-4">
+                  <div class="flex-shrink-0 w-10 h-10 rounded-lg bg-primary-light dark:bg-primary/20 flex items-center justify-center" aria-hidden="true">
+                    {value.icon ? (
+                      <Icon name={value.icon} class="w-5 h-5 text-primary" />
+                    ) : (
+                      <Icon name="check" class="w-5 h-5 text-primary" />
+                    )}
+                  </div>
+                  <div>
+                    <h4 class="font-medium text-gray-900 dark:text-white">{value.title}</h4>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{value.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+
+      {aboutConfig.image && (
+        <div class="relative" aria-hidden="true">
+          <div class="absolute -inset-4 bg-gradient-to-br from-primary/10 to-secondary/10 rounded-2xl blur-xl" />
+          <img
+            src={aboutConfig.image}
+            alt=""
+            class="relative rounded-xl shadow-xl w-full h-auto"
+            loading="lazy"
+          />
+        </div>
+      )}
+    </div>
+  </div>
+</section>
+
+<style>
+  :host { display: block; }
+  .bg-white { background-color: var(--color-bg-primary); }
+  .dark\:bg-gray-950 { background-color: var(--color-bg-primary); }
+  .container { width: 100%; max-width: var(--container-xl); margin: 0 auto; padding: 0 var(--space-4); }
+  @media (min-width: 640px) { .container { padding: 0 var(--space-6); } }
+  @media (min-width: 1024px) { .container { padding: 0 var(--space-8); } }
+  .grid { display: grid; }
+  .lg\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .gap-12 { gap: var(--space-12); }
+  .lg\:gap-16 { gap: var(--space-16); }
+  .items-center { align-items: center; }
+  .mb-8 { margin-bottom: var(--space-8); }
+  .text-3xl { font-size: var(--text-3xl); }
+  .md\:text-4xl { font-size: var(--text-4xl); }
+  .font-bold { font-weight: var(--font-bold); }
+  .text-gray-900 { color: var(--color-gray-900); }
+  .dark\:text-white { color: var(--color-white); }
+  .mb-4 { margin-bottom: var(--space-4); }
+  .text-lg { font-size: var(--text-lg); }
+  .text-gray-600 { color: var(--color-gray-600); }
+  .dark\:text-gray-300 { color: var(--color-gray-300); }
+  .leading-relaxed { line-height: var(--leading-relaxed); }
+  .p-6 { padding: var(--space-6); }
+  .bg-primary-light { background-color: var(--color-primary-light); }
+  .dark\:bg-primary\/10 { background-color: color-mix(in srgb, var(--color-primary) 10%, transparent); }
+  .rounded-xl { border-radius: var(--radius-xl); }
+  .border-l-4 { border-left-width: 4px; }
+  .border-primary { border-color: var(--color-primary); }
+  .text-lg { font-size: var(--text-lg); }
+  .font-semibold { font-weight: var(--font-semibold); }
+  .mb-2 { margin-bottom: var(--space-2); }
+  .space-y-4 > * + * { margin-top: var(--space-4); }
+  .space-y-4 > * + * { margin-top: var(--space-4); }
+  .flex { display: flex; }
+  .gap-4 { gap: var(--space-4); }
+  .flex-shrink-0 { flex-shrink: 0; }
+  .w-10 { width: 2.5rem; }
+  .h-10 { height: 2.5rem; }
+  .rounded-lg { border-radius: var(--radius-lg); }
+  .bg-primary-light { background-color: var(--color-primary-light); }
+  .dark\:bg-primary\/20 { background-color: color-mix(in srgb, var(--color-primary) 20%, transparent); }
+  .items-center { align-items: center; }
+  .justify-center { justify-content: center; }
+  .w-5 { width: 1.25rem; }
+  .h-5 { height: 1.25rem; }
+  .text-primary { color: var(--color-primary); }
+  .font-medium { font-weight: var(--font-medium); }
+  .mt-1 { margin-top: var(--space-1); }
+  .text-sm { font-size: var(--text-sm); }
+  .text-gray-400 { color: var(--color-gray-400); }
+  .relative { position: relative; }
+  .-inset-4 { top: -1rem; right: -1rem; bottom: -1rem; left: -1rem; }
+  .bg-gradient-to-br { background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)); }
+  .from-primary\/10 { --tw-gradient-from: color-mix(in srgb, var(--color-primary) 10%, transparent); --tw-gradient-to: color-mix(in srgb, var(--color-primary) 0%, transparent); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+  .to-secondary\/10 { --tw-gradient-to: color-mix(in srgb, var(--color-secondary) 10%, transparent); }
+  .rounded-2xl { border-radius: var(--radius-2xl); }
+  .blur-xl { filter: blur(24px); }
+  .w-full { width: 100%; }
+  .h-auto { height: auto; }
+  .shadow-xl { box-shadow: var(--shadow-xl); }
+
+  @media (min-width: 1024px) {
+    .lg\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .lg\:gap-16 { gap: var(--space-16); }
+  }
+</style>

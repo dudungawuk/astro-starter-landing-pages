@@ -1,0 +1,150 @@
+---
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import { heroConfig } from '@/config/site';
+
+const { class: className = '' } = Astro.props;
+
+if (!heroConfig.enabled) {
+  // Return nothing if disabled
+}
+---
+
+<section id="home" class="relative min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 {className}" aria-labelledby="hero-heading">
+  <div class="absolute inset-0 overflow-hidden" aria-hidden="true">
+    <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+    <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-3xl" />
+  </div>
+
+  <div class="container relative py-20 lg:py-32">
+    <div class="max-w-3xl mx-auto text-center">
+      <h1 id="hero-heading" class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6">
+        {heroConfig.headline}
+      </h1>
+
+      <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed mb-10 max-w-2xl mx-auto">
+        {heroConfig.description}
+      </p>
+
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+        <Button variant={heroConfig.primaryCta.variant} size="lg" href={heroConfig.primaryCta.href} class="w-full sm:w-auto">
+          {heroConfig.primaryCta.label}
+          <Icon name="arrowRight" class="w-5 h-5 ml-2" aria-hidden="true" />
+        </Button>
+        {heroConfig.secondaryCta && (
+          <Button variant={heroConfig.secondaryCta.variant} size="lg" href={heroConfig.secondaryCta.href} class="w-full sm:w-auto">
+            {heroConfig.secondaryCta.label}
+          </Button>
+        )}
+      </div>
+
+      {heroConfig.image && (
+        <div class="mt-16 relative" aria-hidden="true">
+          <img
+            src={heroConfig.image}
+            alt=""
+            class="mx-auto max-w-full h-auto rounded-xl shadow-xl"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </div>
+      )}
+    </div>
+  </div>
+
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce" aria-hidden="true">
+    <Icon name="chevronDown" class="w-6 h-6 text-gray-400" />
+  </div>
+</section>
+
+<style>
+  :host { display: block; }
+  .relative { position: relative; }
+  .min-h-screen { min-height: 100vh; }
+  .flex { display: flex; }
+  .items-center { align-items: center; }
+  .justify-center { justify-content: center; }
+  .bg-gray-50 { background-color: var(--color-bg-secondary); }
+  .dark\:bg-gray-900 { background-color: var(--color-bg-secondary); }
+  .absolute { position: absolute; }
+  .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+  .overflow-hidden { overflow: hidden; }
+  .bg-gradient-to-br { background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)); }
+  .from-primary\/5 { --tw-gradient-from: color-mix(in srgb, var(--color-primary) 5%, transparent); --tw-gradient-to: color-mix(in srgb, var(--color-primary) 0%, transparent); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+  .via-transparent { --tw-gradient-to: transparent; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to), var(--tw-gradient-to); }
+  .to-secondary\/5 { --tw-gradient-to: color-mix(in srgb, var(--color-secondary) 5%, transparent); }
+  .top-1\/4 { top: 25%; }
+  .left-1\/4 { left: 25%; }
+  .w-96 { width: 24rem; }
+  .h-96 { height: 24rem; }
+  .bg-primary\/10 { background-color: color-mix(in srgb, var(--color-primary) 10%, transparent); }
+  .rounded-full { border-radius: 9999px; }
+  .blur-3xl { filter: blur(64px); }
+  .bottom-1\/4 { bottom: 25%; }
+  .right-1\/4 { right: 25%; }
+  .bg-secondary\/10 { background-color: color-mix(in srgb, var(--color-secondary) 10%, transparent); }
+  .container { width: 100%; max-width: var(--container-xl); margin: 0 auto; padding: 0 var(--space-4); }
+  @media (min-width: 640px) { .container { padding: 0 var(--space-6); } }
+  @media (min-width: 1024px) { .container { padding: 0 var(--space-8); } }
+  .py-20 { padding-top: var(--space-20); padding-bottom: var(--space-20); }
+  .lg\:py-32 { padding-top: var(--space-32); padding-bottom: var(--space-32); }
+  .max-w-3xl { max-width: 48rem; }
+  .mx-auto { margin-left: auto; margin-right: auto; }
+  .text-center { text-align: center; }
+  .text-4xl { font-size: var(--text-4xl); }
+  .md\:text-5xl { font-size: var(--text-5xl); }
+  .lg\:text-6xl { font-size: var(--text-6xl); }
+  .font-extrabold { font-weight: var(--font-extrabold); }
+  .text-gray-900 { color: var(--color-gray-900); }
+  .dark\:text-white { color: var(--color-white); }
+  .leading-tight { line-height: var(--leading-tight); }
+  .mb-6 { margin-bottom: var(--space-6); }
+  .text-lg { font-size: var(--text-lg); }
+  .md\:text-xl { font-size: var(--text-xl); }
+  .text-gray-600 { color: var(--color-gray-600); }
+  .dark\:text-gray-300 { color: var(--color-gray-300); }
+  .leading-relaxed { line-height: var(--leading-relaxed); }
+  .mb-10 { margin-bottom: var(--space-10); }
+  .max-w-2xl { max-width: 42rem; }
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .sm\:flex-row { flex-direction: row; }
+  .items-center { align-items: center; }
+  .justify-center { justify-content: center; }
+  .gap-4 { gap: var(--space-4); }
+  .w-full { width: 100%; }
+  .sm\:w-auto { width: auto; }
+  .mt-16 { margin-top: var(--space-16); }
+  .rounded-xl { border-radius: var(--radius-xl); }
+  .shadow-xl { box-shadow: var(--shadow-xl); }
+  .bottom-8 { bottom: 2rem; }
+  .left-1\/2 { left: 50%; }
+  .-translate-x-1\/2 { transform: translateX(-50%); }
+  .animate-bounce { animation: bounce 1s infinite; }
+  .w-6 { width: 1.5rem; }
+  .h-6 { height: 1.5rem; }
+  .text-gray-400 { color: var(--color-gray-400); }
+  .ml-2 { margin-left: var(--space-2); }
+  .w-5 { width: 1.25rem; }
+  .h-5 { height: 1.25rem; }
+  .w-8 { width: 2rem; }
+  .h-8 { height: 2rem; }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(-25%); animation-timing-function: cubic-bezier(0.8, 0, 1, 1); }
+    50% { transform: translateX(-50%) translateY(0); animation-timing-function: cubic-bezier(0, 0, 0.2, 1); }
+  }
+
+  @media (min-width: 768px) {
+    .md\:text-5xl { font-size: var(--text-5xl); }
+    .md\:text-xl { font-size: var(--text-xl); }
+    .sm\:flex-row { flex-direction: row; }
+    .sm\:w-auto { width: auto; }
+  }
+
+  @media (min-width: 1024px) {
+    .lg\:text-6xl { font-size: var(--text-6xl); }
+    .lg\:py-32 { padding-top: var(--space-32); padding-bottom: var(--space-32); }
+  }
+</style>

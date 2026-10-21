@@ -1,0 +1,98 @@
+---
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import { ctaSectionConfig } from '@/config/site';
+
+const { class: className = '' } = Astro.props;
+
+if (!ctaSectionConfig.enabled) {
+  // Return nothing if disabled
+}
+---
+
+<section id="contact" class="relative bg-gray-900 dark:bg-gray-950 text-white {className}" aria-labelledby="cta-heading">
+  {ctaSectionConfig.backgroundImage && (
+    <div class="absolute inset-0 z-0" aria-hidden="true">
+      <img
+        src={ctaSectionConfig.backgroundImage}
+        alt=""
+        class="w-full h-full object-cover opacity-10"
+      />
+    </div>
+  )}
+
+  <div class="container relative z-10 py-16 lg:py-24 text-center">
+    <div class="max-w-2xl mx-auto">
+      <h2 id="cta-heading" class="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+        {ctaSectionConfig.title}
+      </h2>
+
+      <p class="text-lg md:text-xl text-gray-300 leading-relaxed mb-8">
+        {ctaSectionConfig.description}
+      </p>
+
+      <Button
+        variant={ctaSectionConfig.button.variant}
+        size="lg"
+        href={ctaSectionConfig.button.href}
+        class="w-full sm:w-auto"
+      >
+        {ctaSectionConfig.button.label}
+        <Icon name="arrowRight" class="w-5 h-5 ml-2" aria-hidden="true" />
+      </Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  :host { display: block; }
+  .relative { position: relative; }
+  .bg-gray-900 { background-color: var(--color-bg-inverse); }
+  .dark\:bg-gray-950 { background-color: var(--color-bg-inverse); }
+  .text-white { color: var(--color-text-inverse); }
+  .absolute { position: absolute; }
+  .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+  .z-0 { z-index: 0; }
+  .w-full { width: 100%; }
+  .h-full { height: 100%; }
+  .object-cover { object-fit: cover; }
+  .opacity-10 { opacity: 0.1; }
+  .container { width: 100%; max-width: var(--container-xl); margin: 0 auto; padding: 0 var(--space-4); }
+  @media (min-width: 640px) { .container { padding: 0 var(--space-6); } }
+  @media (min-width: 1024px) { .container { padding: 0 var(--space-8); } }
+  .z-10 { z-index: 10; }
+  .py-16 { padding-top: var(--space-16); padding-bottom: var(--space-16); }
+  .lg\:py-24 { padding-top: var(--space-24); padding-bottom: var(--space-24); }
+  .text-center { text-align: center; }
+  .max-w-2xl { max-width: 42rem; }
+  .mx-auto { margin-left: auto; margin-right: auto; }
+  .text-3xl { font-size: var(--text-3xl); }
+  .md\:text-4xl { font-size: var(--text-4xl); }
+  .lg\:text-5xl { font-size: var(--text-5xl); }
+  .font-bold { font-weight: var(--font-bold); }
+  .mb-6 { margin-bottom: var(--space-6); }
+  .text-lg { font-size: var(--text-lg); }
+  .md\:text-xl { font-size: var(--text-xl); }
+  .text-gray-300 { color: var(--color-gray-300); }
+  .leading-relaxed { line-height: var(--leading-relaxed); }
+  .mb-8 { margin-bottom: var(--space-8); }
+  .w-full { width: 100%; }
+  .sm\:w-auto { width: auto; }
+  .w-5 { width: 1.25rem; }
+  .h-5 { height: 1.25rem; }
+  .ml-2 { margin-left: var(--space-2); }
+
+  @media (min-width: 640px) {
+    .sm\:w-auto { width: auto; }
+  }
+
+  @media (min-width: 768px) {
+    .md\:text-4xl { font-size: var(--text-4xl); }
+    .md\:text-xl { font-size: var(--text-xl); }
+  }
+
+  @media (min-width: 1024px) {
+    .lg\:text-5xl { font-size: var(--text-5xl); }
+    .lg\:py-24 { padding-top: var(--space-24); padding-bottom: var(--space-24); }
+  }
+</style>

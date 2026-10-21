@@ -1,0 +1,208 @@
+---
+import Card from '../ui/Card.astro';
+import Badge from '../ui/Badge.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import { latestBlogConfig } from '@/config/site';
+import { getCollection } from 'astro:content';
+
+const { class: className = '' } = Astro.props;
+
+if (!latestBlogConfig.enabled) {
+  // Return nothing if disabled
+}
+
+const posts = (await getCollection('blog'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, latestBlogConfig.maxPosts);
+---
+
+<section id="blog" class="bg-white dark:bg-gray-950 {className}" aria-labelledby="blog-heading">
+  <div class="container">
+    <header class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12 lg:mb-16">
+      <div>
+        <h2 id="blog-heading" class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
+          {latestBlogConfig.title}
+        </h2>
+        {latestBlogConfig.subtitle && (
+          <p class="text-lg text-gray-600 dark:text-gray-300">
+            {latestBlogConfig.subtitle}
+          </p>
+        )}
+      </div>
+      <Button variant="outline" href="/blog/" class="w-full md:w-auto mt-4 md:mt-0">
+        View All Articles
+        <Icon name="arrowRight" class="w-4 h-4 ml-2" aria-hidden="true" />
+      </Button>
+    </header>
+
+    {posts.length > 0 ? (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        {posts.map((post) => (
+          <Card variant="bordered" padding="none" hover class="overflow-hidden h-full flex flex-col" href={`/blog/${post.slug}/`}>
+            {post.data.coverImage && (
+              <div class="relative aspect-video overflow-hidden" aria-hidden="true">
+                <img
+                  src={post.data.coverImage}
+                  alt=""
+                  class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+            )}
+            <div class="p-6 flex flex-col flex-1">
+              <div class="flex flex-wrap items-center gap-2 mb-3">
+                {post.data.tags.slice(0, 2).map((tag) => (
+                  <Badge variant="default" size="sm">
+                    {tag}
+                  </Badge>
+                ))}
+                {post.data.tags.length > 2 && (
+                  <Badge variant="default" size="sm">
+                    +{post.data.tags.length - 2} more
+                  </Badge>
+                )}
+              </div>
+              <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                {post.data.title}
+              </h3>
+              <p class="text-gray-600 dark:text-gray-300 leading-relaxed flex-1 mb-4 line-clamp-3">
+                {post.data.description}
+              </p>
+              <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 pt-4 border-t border-gray-100 dark:border-gray-800">
+                <time datetime={post.data.pubDate.toISOString()}>
+                  {post.data.pubDate.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </time>
+                {post.data.author && (
+                  <>
+                    <span aria-hidden="true">·</span>
+                    <span>{post.data.author}</span>
+                  </>
+                )}
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    ) : (
+      <div class="text-center py-16">
+        <Icon name="document" class="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" aria-hidden="true" />
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">No articles yet</h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">Start writing by creating a Markdown file in <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">src/content/blog/</code></p>
+        <Button variant="primary" href="/blog/">
+          Learn How to Write Posts
+        </Button>
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  :host { display: block; }
+  .bg-white { background-color: var(--color-bg-primary); }
+  .dark\:bg-gray-950 { background-color: var(--color-bg-primary); }
+  .container { width: 100%; max-width: var(--container-xl); margin: 0 auto; padding: 0 var(--space-4); }
+  @media (min-width: 640px) { .container { padding: 0 var(--space-6); } }
+  @media (min-width: 1024px) { .container { padding: 0 var(--space-8); } }
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .md\:flex-row { flex-direction: row; }
+  .md\:items-end { align-items: flex-end; }
+  .md\:justify-between { justify-content: space-between; }
+  .gap-4 { gap: var(--space-4); }
+  .mb-12 { margin-bottom: var(--space-12); }
+  .lg\:mb-16 { margin-bottom: var(--space-16); }
+  .text-3xl { font-size: var(--text-3xl); }
+  .md\:text-4xl { font-size: var(--text-4xl); }
+  .font-bold { font-weight: var(--font-bold); }
+  .text-gray-900 { color: var(--color-gray-900); }
+  .dark\:text-white { color: var(--color-white); }
+  .mb-2 { margin-bottom: var(--space-2); }
+  .text-lg { font-size: var(--text-lg); }
+  .text-gray-600 { color: var(--color-gray-600); }
+  .dark\:text-gray-300 { color: var(--color-gray-300); }
+  .w-full { width: 100%; }
+  .md\:w-auto { width: auto; }
+  .mt-4 { margin-top: var(--space-4); }
+  .md\:mt-0 { margin-top: 0; }
+  .grid { display: grid; }
+  .grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+  .md\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .lg\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .gap-6 { gap: var(--space-6); }
+  .lg\:gap-8 { gap: var(--space-8); }
+  .overflow-hidden { overflow: hidden; }
+  .h-full { height: 100%; }
+  .relative { position: relative; }
+  .aspect-video { aspect-ratio: 16 / 9; }
+  .w-full { width: 100%; }
+  .h-full { height: 100%; }
+  .object-cover { object-fit: cover; }
+  .transition-transform { transition: transform var(--transition-normal); }
+  .duration-500 { transition-duration: 500ms; }
+  .hover\:scale-105:hover { transform: scale(1.05); }
+  .p-6 { padding: var(--space-6); }
+  .flex-1 { flex: 1 1 auto; }
+  .flex-wrap { flex-wrap: wrap; }
+  .items-center { align-items: center; }
+  .gap-2 { gap: var(--space-2); }
+  .mb-3 { margin-bottom: var(--space-3); }
+  .text-xl { font-size: var(--text-xl); }
+  .font-semibold { font-weight: var(--font-semibold); }
+  .text-gray-900 { color: var(--color-gray-900); }
+  .dark\:text-white { color: var(--color-white); }
+  .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .text-gray-600 { color: var(--color-gray-600); }
+  .dark\:text-gray-300 { color: var(--color-gray-300); }
+  .leading-relaxed { line-height: var(--leading-relaxed); }
+  .mb-4 { margin-bottom: var(--space-4); }
+  .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .pt-4 { padding-top: var(--space-4); }
+  .border-t { border-top-width: 1px; }
+  .border-gray-100 { border-color: var(--color-gray-100); }
+  .dark\:border-gray-800 { border-color: var(--color-gray-800); }
+  .text-sm { font-size: var(--text-sm); }
+  .text-gray-500 { color: var(--color-gray-500); }
+  .dark\:text-gray-400 { color: var(--color-gray-400); }
+  .gap-4 { gap: var(--space-4); }
+  .py-16 { padding-top: var(--space-16); padding-bottom: var(--space-16); }
+  .text-center { text-align: center; }
+  .w-16 { width: 4rem; }
+  .h-16 { height: 4rem; }
+  .mx-auto { margin-left: auto; margin-right: auto; }
+  .text-gray-300 { color: var(--color-gray-300); }
+  .dark\:text-gray-600 { color: var(--color-gray-600); }
+  .mb-4 { margin-bottom: var(--space-4); }
+  .text-xl { font-size: var(--text-xl); }
+  .font-semibold { font-weight: var(--font-semibold); }
+  .mb-2 { margin-bottom: var(--space-2); }
+  .text-gray-600 { color: var(--color-gray-600); }
+  .dark\:text-gray-400 { color: var(--color-gray-400); }
+  .mb-6 { margin-bottom: var(--space-6); }
+  .bg-gray-100 { background-color: var(--color-gray-100); }
+  .dark\:bg-gray-800 { background-color: var(--color-gray-800); }
+  .px-2 { padding-left: var(--space-2); padding-right: var(--space-2); }
+  .py-1 { padding-top: var(--space-1); padding-bottom: var(--space-1); }
+  .rounded { border-radius: var(--radius-md); }
+
+  @media (min-width: 768px) {
+    .md\:flex-row { flex-direction: row; }
+    .md\:items-end { align-items: flex-end; }
+    .md\:justify-between { justify-content: space-between; }
+    .md\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .md\:text-4xl { font-size: var(--text-4xl); }
+    .md\:w-auto { width: auto; }
+    .md\:mt-0 { margin-top: 0; }
+  }
+
+  @media (min-width: 1024px) {
+    .lg\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .lg\:mb-16 { margin-bottom: var(--space-16); }
+    .lg\:gap-8 { gap: var(--space-8); }
+  }
+</style>

@@ -1,0 +1,140 @@
+---
+import Navigation from './Navigation.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import { siteConfig, navItems } from '@/config/site';
+
+interface HeaderProps {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+---
+
+<header
+  class="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-950/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800 {className}"
+  role="banner"
+>
+  <div class="container flex items-center justify-between h-16 md:h-[var(--header-height)]">
+    <a
+      href="/"
+      class="flex items-center gap-2 text-xl font-bold text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 rounded-md"
+      aria-label={`${siteConfig.name} - Home`}
+    >
+      <Icon name="code" class="w-8 h-8 text-primary" aria-hidden="true" />
+      <span>{siteConfig.logo.text}</span>
+    </a>
+
+    <Navigation class="hidden md:flex" />
+
+    <div class="flex items-center gap-4 md:hidden">
+      <Button
+        variant="ghost"
+        size="sm"
+        aria-label="Toggle menu"
+        class="mobile-menu-toggle"
+      >
+        <Icon name="menu" aria-hidden="true" class="w-6 h-6" />
+      </Button>
+    </div>
+  </div>
+
+  <div class="mobile-menu md:hidden hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+    <div class="container py-4 space-y-4">
+      <nav aria-label="Mobile navigation">
+        <ul class="space-y-2" role="menubar">
+          {navItems.map((item: { label: string; href: string }) => (
+            <li role="none">
+              <a
+                href={item.href}
+                role="menuitem"
+                class="block px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-200 hover:text-primary dark:hover:text-primary-light rounded-md transition-colors"
+              >
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      <Button variant="primary" class="w-full" href="#contact">
+        Get in Touch
+      </Button>
+    </div>
+  </div>
+
+  <script is:inline>
+    const toggle = document.querySelector('.mobile-menu-toggle');
+    const menu = document.querySelector('.mobile-menu');
+
+    if (toggle && menu) {
+      toggle.addEventListener('click', () => {
+        const isOpen = menu.classList.toggle('hidden');
+        toggle.setAttribute('aria-expanded', (!isOpen).toString());
+        toggle.innerHTML = isOpen
+          ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6" aria-hidden="true"><path d="M3 12h18M3 6h18M3 18h18"/></svg>'
+          : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"/></svg>';
+      });
+
+      menu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          menu.classList.add('hidden');
+          toggle.setAttribute('aria-expanded', 'false');
+          toggle.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6" aria-hidden="true"><path d="M3 12h18M3 6h18M3 18h18"/></svg>';
+        });
+      });
+    }
+  </script>
+</header>
+
+<style>
+  :host { display: block; }
+  .fixed { position: fixed; }
+  .top-0 { top: 0; }
+  .left-0 { left: 0; }
+  .right-0 { right: 0; }
+  .z-50 { z-index: var(--z-fixed); }
+  .bg-white\/95 { background-color: rgb(255 255 255 / 0.95); }
+  .dark\:bg-gray-950\/95 { background-color: rgb(3 7 18 / 0.95); }
+  .backdrop-blur-sm { backdrop-filter: blur(4px); }
+  .border-b { border-bottom-width: 1px; }
+  .border-gray-200 { border-color: var(--color-border-light); }
+  .dark\:border-gray-800 { border-color: var(--color-border-dark); }
+  .flex { display: flex; }
+  .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .h-16 { height: 4rem; }
+  .md\:h-\[var\(--header-height\)\] { height: var(--header-height); }
+  .gap-2 { gap: var(--space-2); }
+  .text-xl { font-size: var(--text-xl); }
+  .font-bold { font-weight: var(--font-bold); }
+  .text-gray-900 { color: var(--color-gray-900); }
+  .dark\:text-white { color: var(--color-white); }
+  .focus\:outline-none:focus { outline: none; }
+  .focus\:ring-2:focus-visible { box-shadow: 0 0 0 2px var(--color-primary); }
+  .focus\:ring-offset-2:focus-visible { box-shadow: 0 0 0 2px var(--color-bg-primary), 0 0 0 4px var(--color-primary); }
+  .rounded-md { border-radius: var(--radius-md); }
+  .hidden { display: none; }
+  .md\:flex { display: flex; }
+  .gap-4 { gap: var(--space-4); }
+  .md\:hidden { display: none; }
+  @media (min-width: 768px) { .md\:hidden { display: none; } }
+  .container { width: 100%; max-width: var(--container-xl); margin: 0 auto; padding: 0 var(--space-4); }
+  @media (min-width: 640px) { .container { padding: 0 var(--space-6); } }
+  @media (min-width: 1024px) { .container { padding: 0 var(--space-8); } }
+  .py-4 { padding-top: var(--space-4); padding-bottom: var(--space-4); }
+  .space-y-4 > * + * { margin-top: var(--space-4); }
+  .space-y-2 > * + * { margin-top: var(--space-2); }
+  .block { display: block; }
+  .px-3 { padding-left: var(--space-3); padding-right: var(--space-3); }
+  .py-2 { padding-top: var(--space-2); padding-bottom: var(--space-2); }
+  .text-base { font-size: var(--text-base); }
+  .font-medium { font-weight: var(--font-medium); }
+  .text-gray-700 { color: var(--color-gray-700); }
+  .dark\:text-gray-200 { color: var(--color-gray-200); }
+  .hover\:text-primary:hover { color: var(--color-primary); }
+  .dark\:hover\:text-primary-light:hover { color: var(--color-primary-light); }
+  .rounded-md { border-radius: var(--radius-md); }
+  .transition-colors { transition: color var(--transition-fast); }
+  .w-full { width: 100%; }
+  .border-t { border-top-width: 1px; }
+</style>

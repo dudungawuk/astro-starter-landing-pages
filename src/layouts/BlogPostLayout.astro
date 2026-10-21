@@ -1,0 +1,254 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import Button from '../components/ui/Button.astro';
+import Icon from '../components/ui/Icon.astro';
+import Badge from '../components/ui/Badge.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface BlogPostLayoutProps {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { data, body } = post;
+const { title, description, pubDate, updatedDate, author, coverImage, tags } = data;
+
+const formattedDate = pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const formattedUpdatedDate = updatedDate?.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+});
+
+const siteUrl = import.meta.env.SITE || 'https://example.com';
+const postUrl = new URL(`/blog/${post.slug}/`, siteUrl).toString();
+const shareUrl = encodeURIComponent(postUrl);
+const shareTitle = encodeURIComponent(title);
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  image={coverImage}
+  url={postUrl}
+  type="article"
+  publishedTime={pubDate}
+  modifiedTime={updatedDate}
+  author={author}
+  tags={tags}
+>
+  <article class="min-h-screen flex flex-col">
+    <Header />
+
+    <main id="main-content" class="flex-1" role="main">
+      <article class="py-16 lg:py-24">
+        <div class="container max-w-3xl">
+          <header class="mb-12">
+            <div class="flex flex-wrap items-center gap-2 mb-6">
+              {tags.map((tag: string) => (
+                <Badge variant="primary" size="sm">
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white leading-tight mb-6">
+              {title}
+            </h1>
+
+            <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed mb-8">
+              {description}
+            </p>
+
+            <div class="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+              <time datetime={pubDate.toISOString()} class="flex items-center gap-1">
+                <Icon name="calendar" class="w-4 h-4" aria-hidden="true" />
+                <span>{formattedDate}</span>
+              </time>
+              {updatedDate && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <time datetime={updatedDate.toISOString()} class="flex items-center gap-1">
+                    <Icon name="clock" class="w-4 h-4" aria-hidden="true" />
+                    <span>Updated {formattedUpdatedDate}</span>
+                  </time>
+                </>
+              )}
+              {author && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span class="flex items-center gap-1">
+                    <Icon name="user" class="w-4 h-4" aria-hidden="true" />
+                    <span>{author}</span>
+                  </span>
+                </>
+              )}
+              <span class="flex items-center gap-1">
+                <Icon name="clock" class="w-4 h-4" aria-hidden="true" />
+                <span>{Math.ceil(body.length / 1000)} min read</span>
+              </span>
+            </div>
+          </header>
+
+          {coverImage && (
+            <div class="relative aspect-video rounded-xl overflow-hidden mb-12" aria-hidden="true">
+              <img
+                src={coverImage}
+                alt=""
+                class="w-full h-full object-cover"
+                loading="eager"
+                fetchpriority="high"
+              />
+            </div>
+          )}
+
+          <div class="prose prose-lg dark:prose-invert max-w-none" set:html={body} />
+
+          <footer class="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800">
+            <nav class="flex flex-wrap items-center gap-4 mb-6" aria-label="Article tags">
+              <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Tags:</span>
+              {tags.map((tag: string) => (
+                <a
+                  href={`/blog/tags/${tag.toLowerCase()}/`}
+                  class="text-sm text-primary hover:text-primary-hover transition-colors"
+                >
+                  #{tag}
+                </a>
+              ))}
+            </nav>
+
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-gray-500 dark:text-gray-400">Share:</span>
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${shareTitle}&url=${shareUrl}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  aria-label="Share on Twitter"
+                >
+                  <Icon name="twitter" class="w-5 h-5" aria-hidden="true" />
+                </a>
+                <a
+                  href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  aria-label="Share on LinkedIn"
+                >
+                  <Icon name="linkedin" class="w-5 h-5" aria-hidden="true" />
+                </a>
+                <a
+                  href={`mailto:?subject=${shareTitle}&body=${shareUrl}`}
+                  class="text-gray-400 hover:text-primary transition-colors"
+                  aria-label="Share via email"
+                >
+                  <Icon name="email" class="w-5 h-5" aria-hidden="true" />
+                </a>
+              </div>
+
+              <Button variant="outline" href="/blog/" class="w-full sm:w-auto">
+                <Icon name="arrowLeft" class="w-4 h-4 mr-2" aria-hidden="true" />
+                Back to Blog
+              </Button>
+            </div>
+          </footer>
+        </div>
+      </article>
+    </main>
+
+    <Footer />
+  </article>
+</BaseLayout>
+
+<style>
+  :host { display: block; }
+  .min-h-screen { min-height: 100vh; }
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .py-16 { padding-top: var(--space-16); padding-bottom: var(--space-16); }
+  .lg\:py-24 { padding-top: var(--space-24); padding-bottom: var(--space-24); }
+  .container { width: 100%; max-width: var(--container-xl); margin: 0 auto; padding: 0 var(--space-4); }
+  @media (min-width: 640px) { .container { padding: 0 var(--space-6); } }
+  @media (min-width: 1024px) { .container { padding: 0 var(--space-8); } }
+  .max-w-3xl { max-width: 48rem; }
+  .mb-12 { margin-bottom: var(--space-12); }
+  .flex-wrap { flex-wrap: wrap; }
+  .items-center { align-items: center; }
+  .gap-2 { gap: var(--space-2); }
+  .mb-6 { margin-bottom: var(--space-6); }
+  .text-3xl { font-size: var(--text-3xl); }
+  .md\:text-4xl { font-size: var(--text-4xl); }
+  .lg\:text-5xl { font-size: var(--text-5xl); }
+  .font-extrabold { font-weight: var(--font-extrabold); }
+  .text-gray-900 { color: var(--color-gray-900); }
+  .dark\:text-white { color: var(--color-white); }
+  .leading-tight { line-height: var(--leading-tight); }
+  .text-lg { font-size: var(--text-lg); }
+  .md\:text-xl { font size: var(--text-xl); }
+  .text-gray-600 { color: var(--color-gray-600); }
+  .dark\:text-gray-300 { color: var(--color-gray-300); }
+  .leading-relaxed { line-height: var(--leading-relaxed); }
+  .mb-8 { margin-bottom: var(--space-8); }
+  .gap-4 { gap: var(--space-4); }
+  .text-sm { font-size: var(--text-sm); }
+  .text-gray-500 { color: var(--color-gray-500); }
+  .dark\:text-gray-400 { color: var(--color-gray-400); }
+  .w-4 { width: 1rem; }
+  .h-4 { height: 1rem; }
+  .relative { position: relative; }
+  .aspect-video { aspect-ratio: 16 / 9; }
+  .rounded-xl { border-radius: var(--radius-xl); }
+  .overflow-hidden { overflow: hidden; }
+  .mb-12 { margin-bottom: var(--space-12); }
+  .w-full { width: 100%; }
+  .h-full { height: 100%; }
+  .object-cover { object-fit: cover; }
+  .mt-16 { margin-top: var(--space-16); }
+  .pt-8 { padding-top: var(--space-8); }
+  .border-t { border-top-width: 1px; }
+  .border-gray-200 { border-color: var(--color-gray-200); }
+  .dark\:border-gray-800 { border-color: var(--color-gray-800); }
+  .justify-between { justify-content: space-between; }
+  .mr-2 { margin-right: var(--space-2); }
+  .w-5 { width: 1.25rem; }
+  .h-5 { height: 1.25rem; }
+
+  /* Prose styles */
+  .prose { color: var(--color-text-primary); }
+  .prose h1 { font-size: var(--text-3xl); font-weight: var(--font-bold); margin-top: var(--space-10); margin-bottom: var(--space-4); }
+  .prose h2 { font-size: var(--text-2xl); font-weight: var(--font-bold); margin-top: var(--space-8); margin-bottom: var(--space-4); }
+  .prose h3 { font-size: var(--text-xl); font-weight: var(--font-semibold); margin-top: var(--space-6); margin-bottom: var(--space-3); }
+  .prose p { margin-bottom: var(--space-4); line-height: var(--leading-relaxed); }
+  .prose a { color: var(--color-primary); text-decoration: underline; }
+  .prose a:hover { color: var(--color-primary-hover); }
+  .prose ul, .prose ol { margin-bottom: var(--space-4); padding-left: var(--space-6); }
+  .prose li { margin-bottom: var(--space-2); }
+  .prose code { background-color: var(--color-gray-100); padding: 0.125rem 0.375rem; border-radius: var(--radius-sm); font-size: 0.875em; }
+  .prose pre { background-color: var(--color-gray-900); color: var(--color-gray-100); padding: var(--space-4); border-radius: var(--radius-lg); overflow-x: auto; margin-bottom: var(--space-4); }
+  .prose pre code { background: none; padding: 0; font-size: inherit; }
+  .prose blockquote { border-left: 4px solid var(--color-primary); padding-left: var(--space-4); margin: var(--space-6) 0; font-style: italic; color: var(--color-text-secondary); }
+  .prose img { border-radius: var(--radius-lg); margin: var(--space-6) 0; }
+  .prose table { width: 100%; border-collapse: collapse; margin-bottom: var(--space-4); }
+  .prose th, .prose td { border: 1px solid var(--color-border-light); padding: var(--space-3); text-align: left; }
+  .prose th { background-color: var(--color-bg-secondary); font-weight: var(--font-semibold); }
+
+  .dark\:prose-invert { color: var(--color-text-primary); }
+
+  @media (min-width: 768px) {
+    .md\:text-4xl { font-size: var(--text-4xl); }
+    .md\:text-xl { font-size: var(--text-xl); }
+  }
+
+  @media (min-width: 1024px) {
+    .lg\:text-5xl { font-size: var(--text-5xl); }
+    .lg\:py-24 { padding-top: var(--space-24); padding-bottom: var(--space-24); }
+  }
+</style>

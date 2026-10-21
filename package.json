@@ -1,17 +1,28 @@
 {
-  "name": "--typescript",
+  "name": "astro-landing-blog-starter",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "description": "Production-ready Astro landing page + blog starter with TypeScript",
   "engines": {
-    "node": ">=22.22.0"
+    "node": ">=20.0.0"
   },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "typecheck": "astro check",
+    "lint": "prettier --check .",
+    "format": "prettier --write ."
   },
   "dependencies": {
-    "astro": "^7.4.1"
+    "@astrojs/sitemap": "^3.2.0",
+    "astro": "^5.0.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.11",
+    "prettier": "^3.3.0",
+    "prettier-plugin-astro": "^0.14.0",
+    "typescript": "^5.5.0"
   }
 }

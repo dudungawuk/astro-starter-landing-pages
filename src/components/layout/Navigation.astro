@@ -1,0 +1,24 @@
+---
+import Button from '../ui/Button.astro';
+import { navItems } from '@/config/site';
+---
+
+<nav class="flex items-center gap-8" aria-label="Main navigation">
+  <ul class="flex items-center gap-6 md:gap-8" role="menubar">
+    {navItems.map((item: { label: string; href: string }) => (
+      <li role="none">
+        <a
+          href={item.href}
+          role="menuitem"
+          class="text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary dark:hover:text-primary-light transition-colors duration-200"
+        >
+          {item.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+
+  <Button variant="primary" size="sm" href="#contact" class="hidden md:inline-flex">
+    Get in Touch
+  </Button>
+</nav>

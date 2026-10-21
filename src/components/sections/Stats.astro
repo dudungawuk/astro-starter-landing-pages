@@ -1,0 +1,103 @@
+---
+import { statsConfig } from '@/config/site';
+
+const { class: className = '' } = Astro.props;
+
+if (!statsConfig.enabled || statsConfig.items.length === 0) {
+  // Return nothing if disabled
+}
+---
+
+<section id="stats" class="bg-gray-900 dark:bg-gray-950 text-white {className}" aria-labelledby="stats-heading">
+  <div class="container">
+    {(statsConfig.title || statsConfig.subtitle) && (
+      <header class="text-center mb-12 lg:mb-16">
+        {statsConfig.title && (
+          <h2 id="stats-heading" class="text-3xl md:text-4xl font-bold mb-4">
+            {statsConfig.title}
+          </h2>
+        )}
+        {statsConfig.subtitle && (
+          <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+            {statsConfig.subtitle}
+          </p>
+        )}
+      </header>
+    )}
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8">
+      {statsConfig.items.map((stat) => (
+        <article class="text-center p-6 lg:p-8">
+          <div class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-primary mb-3" aria-label={`${stat.value} ${stat.label}`}>
+            {stat.value}
+          </div>
+          <div class="text-sm font-medium text-gray-300 uppercase tracking-wider mb-1">
+            {stat.label}
+          </div>
+          {stat.description && (
+            <p class="text-xs text-gray-500 mt-2">
+              {stat.description}
+            </p>
+          )}
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  :host { display: block; }
+  .bg-gray-900 { background-color: var(--color-bg-inverse); }
+  .dark\:bg-gray-950 { background-color: var(--color-bg-inverse); }
+  .text-white { color: var(--color-text-inverse); }
+  .container { width: 100%; max-width: var(--container-xl); margin: 0 auto; padding: 0 var(--space-4); }
+  @media (min-width: 640px) { .container { padding: 0 var(--space-6); } }
+  @media (min-width: 1024px) { .container { padding: 0 var(--space-8); } }
+  .text-center { text-align: center; }
+  .mb-12 { margin-bottom: var(--space-12); }
+  .lg\:mb-16 { margin-bottom: var(--space-16); }
+  .text-3xl { font-size: var(--text-3xl); }
+  .md\:text-4xl { font-size: var(--text-4xl); }
+  .font-bold { font-weight: var(--font-bold); }
+  .mb-4 { margin-bottom: var(--space-4); }
+  .text-lg { font-size: var(--text-lg); }
+  .text-gray-300 { color: var(--color-gray-300); }
+  .max-w-2xl { max-width: 42rem; }
+  .mx-auto { margin-left: auto; margin-right: auto; }
+  .grid { display: grid; }
+  .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .md\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+  .gap-6 { gap: var(--space-6); }
+  .lg\:gap-8 { gap: var(--space-8); }
+  .text-center { text-align: center; }
+  .p-6 { padding: var(--space-6); }
+  .lg\:p-8 { padding: var(--space-8); }
+  .text-4xl { font-size: var(--text-4xl); }
+  .md\:text-5xl { font-size: var(--text-5xl); }
+  .lg\:text-6xl { font-size: var(--text-6xl); }
+  .font-extrabold { font-weight: var(--font-extrabold); }
+  .text-primary { color: var(--color-primary); }
+  .mb-3 { margin-bottom: var(--space-3); }
+  .text-sm { font-size: var(--text-sm); }
+  .font-medium { font-weight: var(--font-medium); }
+  .text-gray-300 { color: var(--color-gray-300); }
+  .uppercase { text-transform: uppercase; }
+  .tracking-wider { letter-spacing: 0.05em; }
+  .mb-1 { margin-bottom: var(--space-1); }
+  .text-xs { font-size: var(--text-xs); }
+  .text-gray-500 { color: var(--color-gray-500); }
+  .mt-2 { margin-top: var(--space-2); }
+
+  @media (min-width: 768px) {
+    .md\:grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+    .md\:text-4xl { font-size: var(--text-4xl); }
+    .md\:text-5xl { font-size: var(--text-5xl); }
+  }
+
+  @media (min-width: 1024px) {
+    .lg\:mb-16 { margin-bottom: var(--space-16); }
+    .lg\:gap-8 { gap: var(--space-8); }
+    .lg\:p-8 { padding: var(--space-8); }
+    .lg\:text-6xl { font-size: var(--text-6xl); }
+  }
+</style>

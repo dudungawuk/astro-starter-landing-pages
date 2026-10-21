@@ -1,0 +1,44 @@
+---
+interface ContainerProps {
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  class?: string;
+  children: any;
+}
+
+const { size = 'xl', class: className = '', children, ...attrs } = Astro.props;
+
+const sizeClasses: Record<string, string> = {
+  sm: 'max-w-screen-sm',
+  md: 'max-w-screen-md',
+  lg: 'max-w-screen-lg',
+  xl: 'max-w-screen-xl',
+  full: 'max-w-full',
+};
+
+const baseClasses = 'mx-auto px-4 sm:px-6 lg:px-8';
+const containerClass = `${baseClasses} ${sizeClasses[size]} ${className}`;
+---
+
+<div class={containerClass} {...attrs}>
+  {children}
+</div>
+
+<style>
+  .mx-auto { margin-left: auto; margin-right: auto; }
+  .px-4 { padding-left: var(--space-4); padding-right: var(--space-4); }
+  .sm\:px-6 { padding-left: var(--space-6); padding-right: var(--space-6); }
+  .lg\:px-8 { padding-left: var(--space-8); padding-right: var(--space-8); }
+  .max-w-screen-sm { max-width: var(--container-sm); }
+  .max-w-screen-md { max-width: var(--container-md); }
+  .max-w-screen-lg { max-width: var(--container-lg); }
+  .max-w-screen-xl { max-width: var(--container-xl); }
+  .max-w-full { max-width: 100%; }
+
+  @media (min-width: 640px) {
+    .sm\:px-6 { padding-left: var(--space-6); padding-right: var(--space-6); }
+  }
+
+  @media (min-width: 1024px) {
+    .lg\:px-8 { padding-left: var(--space-8); padding-right: var(--space-8); }
+  }
+</style>

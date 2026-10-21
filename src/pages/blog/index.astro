@@ -1,0 +1,335 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import Card from '@/components/ui/Card.astro';
+import Badge from '@/components/ui/Badge.astro';
+import Button from '@/components/ui/Button.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog'))
+  .filter((post) => !post.data.draft)
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const allTags = [...new Set(posts.flatMap((post) => post.data.tags))].sort();
+const postsPerPage = 10;
+const totalPages = Math.ceil(posts.length / postsPerPage);
+
+const page = Number(Astro.url.searchParams.get('page')) || 1;
+const currentPage = Math.max(1, Math.min(page, totalPages));
+const start = (currentPage - 1) * postsPerPage;
+const paginatedPosts = posts.slice(start, start + postsPerPage);
+
+// Compute pagination page numbers
+const pageCount = Math.min(5, totalPages);
+const pageNumbers: number[] = [];
+if (totalPages <= 5) {
+  for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+} else if (currentPage <= 3) {
+  for (let i = 1; i <= 5; i++) pageNumbers.push(i);
+} else if (currentPage >= totalPages - 2) {
+  for (let i = totalPages - 4; i <= totalPages; i++) pageNumbers.push(i);
+} else {
+  for (let i = currentPage - 2; i <= currentPage + 2; i++) pageNumbers.push(i);
+}
+---
+
+<BaseLayout
+  title="Blog"
+  description="Latest articles, tutorials, and insights from our team."
+>
+  <Header />
+
+  <main id="main-content" class="flex-1" role="main">
+    <section class="bg-gray-50 dark:bg-gray-900 py-16 lg:py-24" aria-labelledby="blog-heading">
+      <div class="container">
+        <header class="text-center max-w-3xl mx-auto mb-16">
+          <h1 id="blog-heading" class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900 dark:text-white mb-6">
+            Latest Articles
+          </h1>
+          <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed">
+            Insights, tutorials, and updates on web development, Astro, and modern frontend practices.
+          </p>
+        </header>
+
+        {allTags.length > 0 && (
+          <nav class="mb-12" aria-label="Filter by tag">
+            <div class="flex flex-wrap items-center justify-center gap-2">
+              <button
+                class="px-4 py-2 text-sm font-medium rounded-full bg-primary text-white"
+                data-tag="all"
+                aria-pressed="true"
+              >
+                All
+              </button>
+              {allTags.map((tag: string) => (
+                <button
+                  class="px-4 py-2 text-sm font-medium rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-primary hover:text-white hover:border-primary transition-colors"
+                  data-tag={tag.toLowerCase()}
+                  aria-pressed="false"
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </nav>
+        )}
+
+        {paginatedPosts.length > 0 ? (
+          <>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" id="blog-posts">
+              {paginatedPosts.map((post) => (
+                <Card variant="bordered" padding="none" hover class="overflow-hidden h-full flex flex-col" href={`/blog/${post.slug}/`}>
+                  {post.data.coverImage && (
+                    <div class="relative aspect-video overflow-hidden" aria-hidden="true">
+                      <img
+                        src={post.data.coverImage}
+                        alt=""
+                        class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                  <div class="p-6 flex flex-col flex-1">
+                    <div class="flex flex-wrap items-center gap-2 mb-3">
+                      {post.data.tags.slice(0, 2).map((tag: string) => (
+                        <Badge variant="default" size="sm">
+                          {tag}
+                        </Badge>
+                      ))}
+                      {post.data.tags.length > 2 && (
+                        <Badge variant="default" size="sm">
+                          +{post.data.tags.length - 2} more
+                        </Badge>
+                      )}
+                    </div>
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
+                      {post.data.title}
+                    </h2>
+                    <p class="text-gray-600 dark:text-gray-300 leading-relaxed flex-1 mb-4 line-clamp-3">
+                      {post.data.description}
+                    </p>
+                    <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 pt-4 border-t border-gray-100 dark:border-gray-800">
+                      <time datetime={post.data.pubDate.toISOString()}>
+                        {post.data.pubDate.toLocaleDateString('en-US', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        })}
+                      </time>
+                      {post.data.author && (
+                        <>
+                          <span aria-hidden="true">·</span>
+                          <span>{post.data.author}</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <nav class="mt-12 flex items-center justify-center gap-2" aria-label="Pagination">
+                {currentPage > 1 && (
+                  <a
+                    href={`/blog/?page=${currentPage - 1}`}
+                    class="px-4 py-2 text-sm font-medium rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-primary hover:text-white hover:border-primary transition-colors"
+                    aria-label="Previous page"
+                  >
+                    <Icon name="chevronLeft" class="w-4 h-4" aria-hidden="true" />
+                    <span class="sr-only">Previous</span>
+                  </a>
+                )}
+
+                {pageNumbers.map((pageNum) => (
+                  <a
+                    href={`/blog/?page=${pageNum}`}
+                    class={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                      pageNum === currentPage
+                        ? 'bg-primary text-white'
+                        : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-primary hover:text-white hover:border-primary'
+                    }`}
+                    aria-label={`Page ${pageNum}`}
+                    aria-current={pageNum === currentPage ? 'page' : undefined}
+                  >
+                    {pageNum}
+                  </a>
+                ))}
+
+                {currentPage < totalPages && (
+                  <a
+                    href={`/blog/?page=${currentPage + 1}`}
+                    class="px-4 py-2 text-sm font-medium rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-200 hover:bg-primary hover:text-white hover:border-primary transition-colors"
+                    aria-label="Next page"
+                  >
+                    <span class="sr-only">Next</span>
+                    <Icon name="chevronRight" class="w-4 h-4" aria-hidden="true" />
+                  </a>
+                )}
+              </nav>
+            )}
+          </>
+        ) : (
+          <div class="text-center py-16">
+            <Icon name="document" class="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" aria-hidden="true" />
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">No articles found</h2>
+            <p class="text-gray-600 dark:text-gray-400 mb-6">No articles match the selected filter.</p>
+            <Button variant="primary" href="/blog/?page=1">Show All Articles</Button>
+          </div>
+        )}
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+
+  <script is:inline>
+    const filterButtons = document.querySelectorAll('[data-tag]');
+    const postsContainer = document.getElementById('blog-posts');
+    const posts = postsContainer?.querySelectorAll('[href^="/blog/"]') || [];
+
+    filterButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tag = btn.dataset.tag;
+
+        filterButtons.forEach(b => {
+          b.classList.remove('bg-primary', 'text-white', 'border-primary');
+          b.classList.add('bg-white', 'dark:bg-gray-800', 'border-gray-200', 'dark:border-gray-700', 'text-gray-700', 'dark:text-gray-200');
+          b.setAttribute('aria-pressed', 'false');
+        });
+
+        btn.classList.add('bg-primary', 'text-white', 'border-primary');
+        btn.classList.remove('bg-white', 'dark:bg-gray-800', 'border-gray-200', 'dark:border-gray-700', 'text-gray-700', 'dark:text-gray-200');
+        btn.setAttribute('aria-pressed', 'true');
+
+        posts.forEach(post => {
+          const card = post.closest('article');
+          if (!card) return;
+
+          const cardTags = Array.from(card.querySelectorAll('.badge')).map(b => b.textContent?.toLowerCase());
+          const hasTag = tag === 'all' || cardTags.includes(tag);
+
+          if (hasTag) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  :host { display: block; }
+  .bg-gray-50 { background-color: var(--color-bg-secondary); }
+  .dark\:bg-gray-900 { background-color: var(--color-bg-secondary); }
+  .py-16 { padding-top: var(--space-16); padding-bottom: var(--space-16); }
+  .lg\:py-24 { padding-top: var(--space-24); padding-bottom: var(--space-24); }
+  .container { width: 100%; max-width: var(--container-xl); margin: 0 auto; padding: 0 var(--space-4); }
+  @media (min-width: 640px) { .container { padding: 0 var(--space-6); } }
+  @media (min-width: 1024px) { .container { padding: 0 var(--space-8); } }
+  .text-center { text-align: center; }
+  .max-w-3xl { max-width: 48rem; }
+  .mx-auto { margin-left: auto; margin-right: auto; }
+  .mb-16 { margin-bottom: var(--space-16); }
+  .text-3xl { font-size: var(--text-3xl); }
+  .md\:text-4xl { font-size: var(--text-4xl); }
+  .lg\:text-5xl { font-size: var(--text-5xl); }
+  .font-extrabold { font-weight: var(--font-extrabold); }
+  .text-gray-900 { color: var(--color-gray-900); }
+  .dark\:text-white { color: var(--color-white); }
+  .mb-6 { margin-bottom: var(--space-6); }
+  .text-lg { font-size: var(--text-lg); }
+  .md\:text-xl { font-size: var(--text-xl); }
+  .text-gray-600 { color: var(--color-gray-600); }
+  .dark\:text-gray-300 { color: var(--color-gray-300); }
+  .leading-relaxed { line-height: var(--leading-relaxed); }
+  .mb-12 { margin-bottom: var(--space-12); }
+  .flex { display: flex; }
+  .flex-wrap { flex-wrap: wrap; }
+  .items-center { align-items: center; }
+  .justify-center { justify-content: center; }
+  .gap-2 { gap: var(--space-2); }
+  .px-4 { padding-left: var(--space-4); padding-right: var(--space-4); }
+  .py-2 { padding-top: var(--space-2); padding-bottom: var(--space-2); }
+  .text-sm { font-size: var(--text-sm); }
+  .font-medium { font-weight: var(--font-medium); }
+  .rounded-full { border-radius: var(--radius-full); }
+  .bg-primary { background-color: var(--color-primary); }
+  .text-white { color: var(--color-white); }
+  .bg-white { background-color: var(--color-bg-primary); }
+  .dark\:bg-gray-800 { background-color: var(--color-gray-800); }
+  .border { border-width: 1px; }
+  .border-gray-200 { border-color: var(--color-border-light); }
+  .dark\:border-gray-700 { border-color: var(--color-border-dark); }
+  .text-gray-700 { color: var(--color-gray-700); }
+  .dark\:text-gray-200 { color: var(--color-gray-200); }
+  .hover\:bg-primary:hover { background-color: var(--color-primary); }
+  .hover\:text-white:hover { color: var(--color-white); }
+  .hover\:border-primary:hover { border-color: var(--color-primary); }
+  .transition-colors { transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast); }
+  .grid { display: grid; }
+  .grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+  .md\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .lg\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .gap-6 { gap: var(--space-6); }
+  .lg\:gap-8 { gap: var(--space-8); }
+  .overflow-hidden { overflow: hidden; }
+  .h-full { height: 100%; }
+  .relative { position: relative; }
+  .aspect-video { aspect-ratio: 16 / 9; }
+  .w-full { width: 100%; }
+  .h-full { height: 100%; }
+  .object-cover { object-fit: cover; }
+  .transition-transform { transition: transform var(--transition-normal); }
+  .duration-500 { transition-duration: 500ms; }
+  .hover\:scale-105:hover { transform: scale(1.05); }
+  .p-6 { padding: var(--space-6); }
+  .flex-col { flex-direction: column; }
+  .flex-1 { flex: 1 1 auto; }
+  .mb-3 { margin-bottom: var(--space-3); }
+  .text-xl { font-size: var(--text-xl); }
+  .font-semibold { font-weight: var(--font-semibold); }
+  .text-gray-900 { color: var(--color-gray-900); }
+  .dark\:text-white { color: var(--color-white); }
+  .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .mb-2 { margin-bottom: var(--space-2); }
+  .text-gray-600 { color: var(--color-gray-600); }
+  .dark\:text-gray-300 { color: var(--color-gray-300); }
+  .leading-relaxed { line-height: var(--leading-relaxed); }
+  .mb-4 { margin-bottom: var(--space-4); }
+  .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .pt-4 { padding-top: var(--space-4); }
+  .border-t { border-top-width: 1px; }
+  .border-gray-100 { border-color: var(--color-gray-100); }
+  .dark\:border-gray-800 { border-color: var(--color-gray-800); }
+  .gap-4 { gap: var(--space-4); }
+  .mt-12 { margin-top: var(--space-12); }
+  .justify-center { justify-content: center; }
+  .rounded-lg { border-radius: var(--radius-lg); }
+  .w-4 { width: 1rem; }
+  .h-4 { height: 1rem; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+  .w-16 { width: 4rem; }
+  .h-16 { height: 4rem; }
+  .text-gray-300 { color: var(--color-gray-300); }
+  .dark\:text-gray-600 { color: var(--color-gray-600); }
+  .mb-4 { margin-bottom: var(--space-4); }
+  .mb-2 { margin-bottom: var(--space-2); }
+  .mb-6 { margin-bottom: var(--space-6); }
+
+  @media (min-width: 768px) {
+    .md\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .md\:text-4xl { font-size: var(--text-4xl); }
+    .md\:text-xl { font-size: var(--text-xl); }
+  }
+
+  @media (min-width: 1024px) {
+    .lg\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .lg\:gap-8 { gap: var(--space-8); }
+    .lg\:py-24 { padding-top: var(--space-24); padding-bottom: var(--space-24); }
+  }
+</style>

@@ -1,0 +1,67 @@
+---
+import Icon from '../ui/Icon.astro';
+import { footerConfig, siteConfig } from '@/config/site';
+
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="bg-gray-900 dark:bg-gray-950 text-white" role="contentinfo">
+  <div class="container py-16 lg:py-24">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
+      <div class="lg:col-span-2 space-y-6">
+        <a href="/" class="flex items-center gap-2 text-xl font-bold" aria-label={`${siteConfig.name} - Home`}>
+          <Icon name="code" class="w-8 h-8 text-primary" aria-hidden="true" />
+          <span>{siteConfig.logo.text}</span>
+        </a>
+        <p class="text-gray-400 text-base leading-relaxed max-w-xs">
+          {siteConfig.description}
+        </p>
+        <div class="flex items-center gap-6" role="list" aria-label="Social links">
+          {Object.entries(footerConfig.social).map(([platform, url]) => url && (
+            <a
+              href={url}
+              class="text-gray-400 hover:text-white transition-colors duration-200"
+              aria-label={platform.charAt(0).toUpperCase() + platform.slice(1)}
+              role="listitem"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Icon name={platform} class="w-5 h-5" aria-hidden="true" />
+            </a>
+          ))}
+        </div>
+      </div>
+
+      {footerConfig.navigation.map((section) => (
+        <nav aria-labelledby={`footer-${section.title.toLowerCase()}`}>
+          <h3 id={`footer-${section.title.toLowerCase()}`} class="text-sm font-semibold uppercase tracking-wider text-gray-300 mb-4">
+            {section.title}
+          </h3>
+          <ul class="space-y-3" role="list">
+            {section.links.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="text-gray-400 hover:text-white transition-colors duration-200 text-sm"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))}
+    </div>
+
+    <div class="mt-12 lg:mt-16 pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-gray-400 text-sm">
+        © {currentYear} {siteConfig.name}. {footerConfig.copyright}
+      </p>
+      <div class="flex items-center gap-6 text-sm text-gray-400">
+        <a href="/privacy" class="hover:text-white transition-colors">Privacy</a>
+        <a href="/terms" class="hover:text-white transition-colors">Terms</a>
+        <a href="/cookies" class="hover:text-white transition-colors">Cookies</a>
+      </div>
+    </div>
+  </div>
+</footer>

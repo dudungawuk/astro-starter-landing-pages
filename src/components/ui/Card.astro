@@ -1,0 +1,75 @@
+---
+interface CardProps {
+  variant?: 'default' | 'bordered' | 'elevated';
+  padding?: 'none' | 'sm' | 'md' | 'lg';
+  hover?: boolean;
+  class?: string;
+  href?: string;
+  children: any;
+}
+
+const {
+  variant = 'default',
+  padding = 'md',
+  hover = false,
+  class: className = '',
+  href,
+  children,
+  ...attrs
+} = Astro.props;
+
+const isLink = !!href;
+
+const variantClasses: Record<string, string> = {
+  default: 'bg-white dark:bg-gray-900',
+  bordered: 'bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700',
+  elevated: 'bg-white dark:bg-gray-900 shadow-md',
+};
+
+const paddingClasses: Record<string, string> = {
+  none: '',
+  sm: 'p-4',
+  md: 'p-6',
+  lg: 'p-8',
+};
+
+const hoverClass = hover ? 'transition-shadow duration-300 hover:shadow-xl' : '';
+const linkClass = isLink ? 'block' : '';
+
+const baseClasses = `
+  rounded-xl
+  ${variantClasses[variant]}
+  ${paddingClasses[padding]}
+  ${hoverClass}
+  ${linkClass}
+  ${className}
+`;
+---
+
+{isLink ? (
+  <a href={href} class={baseClasses} {...attrs}>
+    {children}
+  </a>
+) : (
+  <article class={baseClasses} {...attrs}>
+    {children}
+  </article>
+)}
+
+<style>
+  :host { display: block; }
+  .rounded-xl { border-radius: var(--radius-xl); }
+  .bg-white { background-color: var(--color-bg-primary); }
+  .dark\:bg-gray-900 { background-color: var(--color-bg-inverse); }
+  .border { border-width: 1px; }
+  .border-gray-200 { border-color: var(--color-border-light); }
+  .dark\:border-gray-700 { border-color: var(--color-border-dark); }
+  .shadow-md { box-shadow: var(--shadow-md); }
+  .shadow-xl { box-shadow: var(--shadow-xl); }
+  .p-4 { padding: var(--space-4); }
+  .p-6 { padding: var(--space-6); }
+  .p-8 { padding: var(--space-8); }
+  .block { display: block; }
+  .transition-shadow { transition: box-shadow var(--transition-normal); }
+  .duration-300 { transition-duration: 300ms; }
+</style>

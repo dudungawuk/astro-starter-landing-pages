@@ -1,0 +1,57 @@
+---
+interface SectionProps {
+  id?: string;
+  class?: string;
+  background?: 'default' | 'muted' | 'inverse';
+  padding?: 'none' | 'sm' | 'md' | 'lg';
+  children: any;
+}
+
+const { id, class: className = '', background = 'default', padding = 'md', children, ...attrs } = Astro.props;
+
+const backgroundClasses: Record<string, string> = {
+  default: 'bg-white dark:bg-gray-950',
+  muted: 'bg-gray-50 dark:bg-gray-900',
+  inverse: 'bg-gray-900 dark:bg-gray-950 text-white',
+};
+
+const paddingClasses: Record<string, string> = {
+  none: '',
+  sm: 'py-12',
+  md: 'py-16 lg:py-24',
+  lg: 'py-20 lg:py-32',
+};
+
+const sectionClass = `
+  w-full
+  ${backgroundClasses[background]}
+  ${paddingClasses[padding]}
+  ${className}
+`;
+---
+
+<section id={id} class={sectionClass} {...attrs}>
+  {children}
+</section>
+
+<style>
+  :host { display: block; }
+  .w-full { width: 100%; }
+  .bg-white { background-color: var(--color-bg-primary); }
+  .dark\:bg-gray-950 { background-color: var(--color-bg-primary); }
+  .bg-gray-50 { background-color: var(--color-bg-secondary); }
+  .dark\:bg-gray-900 { background-color: var(--color-bg-secondary); }
+  .bg-gray-900 { background-color: var(--color-bg-inverse); }
+  .dark\:bg-gray-950 { background-color: var(--color-bg-inverse); }
+  .text-white { color: var(--color-text-inverse); }
+  .py-12 { padding-top: var(--space-12); padding-bottom: var(--space-12); }
+  .py-16 { padding-top: var(--space-16); padding-bottom: var(--space-16); }
+  .py-20 { padding-top: var(--space-20); padding-bottom: var(--space-20); }
+  .py-24 { padding-top: var(--space-24); padding-bottom: var(--space-24); }
+  .py-32 { padding-top: var(--space-32); padding-bottom: var(--space-32); }
+
+  @media (min-width: 1024px) {
+    .lg\:py-24 { padding-top: var(--space-24); padding-bottom: var(--space-24); }
+    .lg\:py-32 { padding-top: var(--space-32); padding-bottom: var(--space-32); }
+  }
+</style>

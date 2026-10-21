@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://example.com/sitemap-index.xml
+
+# Disallow admin/private paths
+Disallow: /admin/
+Disallow: /private/
+Disallow: /draft/
+Disallow: /_astro/
+Disallow: /*.json$
+Disallow: /*.xml$

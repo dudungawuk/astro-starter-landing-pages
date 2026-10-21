@@ -1,0 +1,116 @@
+---
+interface SEOProps {
+  title?: string;
+  description?: string;
+  image?: string;
+  url?: string;
+  type?: 'website' | 'article';
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  author?: string;
+  tags?: string[];
+  noIndex?: boolean;
+  noFollow?: boolean;
+}
+
+const {
+  title,
+  description,
+  image,
+  url,
+  type = 'website',
+  publishedTime,
+  modifiedTime,
+  author,
+  tags = [],
+  noIndex = false,
+  noFollow = false,
+} = Astro.props;
+
+const siteUrl = import.meta.env.SITE || 'https://example.com';
+const siteName = import.meta.env.PUBLIC_SITE_NAME || 'Astro Starter';
+const defaultImage = '/og-default.jpg';
+const twitterHandle = '@example';
+
+const pageTitle = title ? `${title} | ${siteName}` : siteName;
+const pageDescription = description || 'Production-ready Astro starter with landing page and blog system.';
+const pageImage = image || defaultImage;
+const pageUrl = url || siteUrl;
+const canonicalUrl = new URL(pageUrl, siteUrl).toString();
+const imageUrl = new URL(pageImage, siteUrl).toString();
+
+const jsonLd = type === 'article' && publishedTime
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'BlogPosting',
+      headline: title,
+      description: pageDescription,
+      image: imageUrl,
+      datePublished: publishedTime.toISOString(),
+      dateModified: modifiedTime?.toISOString() || publishedTime.toISOString(),
+      author: {
+        '@type': 'Person',
+        name: author || siteName,
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: siteName,
+        logo: {
+          '@type': 'ImageObject',
+          url: new URL('/logo.png', siteUrl).toString(),
+        },
+      },
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': canonicalUrl,
+      },
+    }
+  : {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: siteName,
+      url: siteUrl,
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: {
+          '@type': 'EntryPoint',
+          urlTemplate: `${siteUrl}/search?q={search_term_string}`,
+        },
+        'query-input': 'required name=search_term_string',
+      },
+    };
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+
+<title>{pageTitle}</title>
+<meta name="description" content={pageDescription} />
+
+<link rel="canonical" href={canonicalUrl} />
+
+{noIndex && <meta name="robots" content="noindex" />}
+{noFollow && <meta name="robots" content="nofollow" />}
+{noIndex || noFollow ? null : <meta name="robots" content="index, follow" />}
+
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:title" content={title || siteName} />
+<meta property="og:description" content={pageDescription} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:site_name" content={siteName} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:site" content={twitterHandle} />
+<meta name="twitter:url" content={canonicalUrl} />
+<meta name="twitter:title" content={title || siteName} />
+<meta name="twitter:description" content={pageDescription} />
+<meta name="twitter:image" content={imageUrl} />
+
+{publishedTime && <meta property="article:published_time" content={publishedTime.toISOString()} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime.toISOString()} />}
+{author && <meta property="article:author" content={author} />}
+{tags.map((tag: string) => <meta property="article:tag" content={tag} />)}
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />

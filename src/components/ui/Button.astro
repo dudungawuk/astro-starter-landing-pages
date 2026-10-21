@@ -1,0 +1,114 @@
+---
+interface ButtonProps {
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  disabled?: boolean;
+  fullWidth?: boolean;
+  ariaLabel?: string;
+  class?: string;
+  children: any;
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  type = 'button',
+  disabled = false,
+  fullWidth = false,
+  ariaLabel,
+  class: className = '',
+  children,
+  ...attrs
+} = Astro.props;
+
+const isLink = !!href;
+
+const variantClasses: Record<string, string> = {
+  primary: 'bg-primary text-white hover:bg-primary-hover focus:ring-primary-light',
+  secondary: 'bg-secondary text-white hover:bg-secondary-hover focus:ring-secondary-light',
+  outline: 'border-2 border-primary text-primary hover:bg-primary-light focus:ring-primary-light',
+  ghost: 'text-primary hover:bg-primary-light focus:ring-primary-light',
+};
+
+const sizeClasses: Record<string, string> = {
+  sm: 'px-3 py-1.5 text-sm',
+  md: 'px-5 py-2.5 text-base',
+  lg: 'px-8 py-3 text-lg',
+};
+
+const baseClasses = `
+  inline-flex items-center justify-center font-semibold
+  rounded-lg transition-all duration-200 ease-out
+  focus:outline-none focus:ring-2 focus:ring-offset-2
+  disabled:opacity-50 disabled:cursor-not-allowed
+  ${fullWidth ? 'w-full' : ''}
+`;
+
+const computedClass = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
+---
+
+{isLink ? (
+  <a
+    href={href}
+    aria-disabled={disabled}
+    aria-label={ariaLabel}
+    class={computedClass}
+    {...attrs}
+  >
+    {children}
+  </a>
+) : (
+  <button
+    type={type}
+    disabled={disabled}
+    aria-disabled={disabled}
+    aria-label={ariaLabel}
+    class={computedClass}
+    {...attrs}
+  >
+    {children}
+  </button>
+)}
+
+<style>
+  :host {
+    display: inline-flex;
+  }
+
+  .bg-primary { background-color: var(--color-primary); }
+  .bg-primary-light { background-color: var(--color-primary-light); }
+  .bg-secondary { background-color: var(--color-secondary); }
+  .hover\:bg-primary-hover:hover { background-color: var(--color-primary-hover); }
+  .hover\:bg-secondary-hover:hover { background-color: var(--color-secondary-hover); }
+  .hover\:bg-primary-light:hover { background-color: var(--color-primary-light); }
+  .text-white { color: var(--color-white); }
+  .text-primary { color: var(--color-primary); }
+  .border-primary { border-color: var(--color-primary); }
+  .border-2 { border-width: 2px; }
+  .rounded-lg { border-radius: var(--radius-lg); }
+  .font-semibold { font-weight: var(--font-semibold); }
+  .inline-flex { display: inline-flex; }
+  .items-center { align-items: center; }
+  .justify-center { justify-content: center; }
+  .px-3 { padding-left: var(--space-3); padding-right: var(--space-3); }
+  .px-5 { padding-left: var(--space-5); padding-right: var(--space-5); }
+  .px-8 { padding-left: var(--space-8); padding-right: var(--space-8); }
+  .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+  .py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+  .py-3 { padding-top: var(--space-3); padding-bottom: var(--space-3); }
+  .text-sm { font-size: var(--text-sm); }
+  .text-base { font-size: var(--text-base); }
+  .text-lg { font-size: var(--text-lg); }
+  .w-full { width: 100%; }
+  .transition-all { transition: all var(--transition-normal); }
+  .duration-200 { transition-duration: 200ms; }
+  .ease-out { transition-timing-function: ease-out; }
+  .focus\:outline-none:focus { outline: none; }
+  .focus\:ring-2:focus-visible { box-shadow: 0 0 0 2px var(--color-border-focus); }
+  .focus\:ring-offset-2:focus-visible { box-shadow: 0 0 0 2px var(--color-bg-primary), 0 0 0 4px var(--color-border-focus); }
+  .disabled\:opacity-50:disabled { opacity: 0.5; }
+  .disabled\:cursor-not-allowed:disabled { cursor: not-allowed; }
+</style>

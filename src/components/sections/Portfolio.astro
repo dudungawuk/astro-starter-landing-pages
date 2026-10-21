@@ -1,0 +1,136 @@
+---
+import Card from '../ui/Card.astro';
+import Badge from '../ui/Badge.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import { portfolioConfig } from '@/config/site';
+
+interface PortfolioProps {
+  class?: string;
+}
+
+const { class: className = '' } = Astro.props;
+
+if (!portfolioConfig.enabled || portfolioConfig.items.length === 0) {
+  // Return nothing if disabled
+}
+---
+
+<section id="portfolio" class="bg-gray-50 dark:bg-gray-900 {className}" aria-labelledby="portfolio-heading">
+  <div class="container">
+    <header class="text-center mb-12 lg:mb-16">
+      <h2 id="portfolio-heading" class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+        {portfolioConfig.title}
+      </h2>
+      {portfolioConfig.subtitle && (
+        <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          {portfolioConfig.subtitle}
+        </p>
+      )}
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+      {portfolioConfig.items.map((project, index) => (
+        <Card key={index} variant="elevated" padding="none" hover class="overflow-hidden h-full flex flex-col">
+          <div class="relative aspect-video overflow-hidden" aria-hidden="true">
+            <img
+              src={project.image}
+              alt=""
+              class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+              loading="lazy"
+            />
+          </div>
+          <div class="p-6 flex flex-col flex-1">
+            <div class="flex items-center gap-2 mb-3">
+              <Badge variant="primary" size="sm">
+                {project.category}
+              </Badge>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+              {project.title}
+            </h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed flex-1 mb-4">
+              {project.description}
+            </p>
+            {project.link && (
+              <Button variant="outline" size="sm" href={project.link.href} class="w-fit flex items-center gap-1">
+                {project.link.label}
+                <Icon name={project.link.external ? 'externalLink' : 'arrowRight'} class="w-4 h-4" aria-hidden="true" />
+              </Button>
+            )}
+          </div>
+        </Card>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  :host { display: block; }
+  .bg-gray-50 { background-color: var(--color-bg-secondary); }
+  .dark\:bg-gray-900 { background-color: var(--color-bg-secondary); }
+  .container { width: 100%; max-width: var(--container-xl); margin: 0 auto; padding: 0 var(--space-4); }
+  @media (min-width: 640px) { .container { padding: 0 var(--space-6); } }
+  @media (min-width: 1024px) { .container { padding: 0 var(--space-8); } }
+  .text-center { text-align: center; }
+  .mb-12 { margin-bottom: var(--space-12); }
+  .lg\:mb-16 { margin-bottom: var(--space-16); }
+  .text-3xl { font-size: var(--text-3xl); }
+  .md\:text-4xl { font-size: var(--text-4xl); }
+  .font-bold { font-weight: var(--font-bold); }
+  .text-gray-900 { color: var(--color-gray-900); }
+  .dark\:text-white { color: var(--color-white); }
+  .mb-4 { margin-bottom: var(--space-4); }
+  .text-lg { font-size: var(--text-lg); }
+  .text-gray-600 { color: var(--color-gray-600); }
+  .dark\:text-gray-300 { color: var(--color-gray-300); }
+  .max-w-2xl { max-width: 42rem; }
+  .mx-auto { margin-left: auto; margin-right: auto; }
+  .grid { display: grid; }
+  .grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+  .md\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .lg\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+  .gap-6 { gap: var(--space-6); }
+  .lg\:gap-8 { gap: var(--space-8); }
+  .overflow-hidden { overflow: hidden; }
+  .h-full { height: 100%; }
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .relative { position: relative; }
+  .aspect-video { aspect-ratio: 16 / 9; }
+  .w-full { width: 100%; }
+  .object-cover { object-fit: cover; }
+  .transition-transform { transition: transform var(--transition-normal); }
+  .duration-500 { transition-duration: 500ms; }
+  .hover\:scale-105:hover { transform: scale(1.05); }
+  .p-6 { padding: var(--space-6); }
+  .flex-1 { flex: 1 1 auto; }
+  .items-center { align-items: center; }
+  .gap-2 { gap: var(--space-2); }
+  .mb-3 { margin-bottom: var(--space-3); }
+  .text-xl { font-size: var(--text-xl); }
+  .font-semibold { font-weight: var(--font-semibold); }
+  .text-gray-900 { color: var(--color-gray-900); }
+  .dark\:text-white { color: var(--color-white); }
+  .mb-2 { margin-bottom: var(--space-2); }
+  .text-gray-600 { color: var(--color-gray-600); }
+  .dark\:text-gray-300 { color: var(--color-gray-300); }
+  .leading-relaxed { line-height: var(--leading-relaxed); }
+  .w-fit { width: fit-content; }
+  .flex { display: flex; }
+  .items-center { align-items: center; }
+  .gap-1 { gap: var(--space-1); }
+  .w-4 { width: 1rem; }
+  .h-4 { height: 1rem; }
+
+  @media (min-width: 768px) {
+    .md\:grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .md\:text-4xl { font-size: var(--text-4xl); }
+  }
+
+  @media (min-width: 1024px) {
+    .lg\:grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .lg\:mb-16 { margin-bottom: var(--space-16); }
+    .lg\:gap-8 { gap: var(--space-8); }
+  }
+</style>
